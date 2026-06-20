@@ -20,40 +20,122 @@ const SMART_URL = 'https://ops.shuhnh.com/voice/app/index.html'
 
 export function VoiceOrderButton({
   buttonLabel = 'مساعد ذكي',
-  primaryColor,
+  primaryColor = '#1a7a4a',
   assistantName = 'مساعد ذكي',
 }: VoiceOrderProps) {
   const [open, setOpen] = useState(false)
+  const portalRef = useRef<HTMLDivElement | null>(null)
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => {
+    // Create a dedicated top-level div, appended directly to <html>
+    // to escape any overflow:hidden or transform on body/app containers
+    const el = document.createElement('div')
+    el.id = 'svo-portal-root'
+    el.style.cssText = [
+      'position:fixed',
+      'top:0',
+      'left:0',
+      'width:100vw',
+      'height:100vh',
+      'pointer-events:none',
+      'z-index:2147483647',
+    ].join(';')
+    document.documentElement.appendChild(el)
+    portalRef.current = el
+    setMounted(true)
+    return () => {
+      document.documentElement.removeChild(el)
+    }
+  }, [])
 
-  const btnStyle = primaryColor
-    ? ({ '--svo-primary': primaryColor } as React.CSSProperties)
-    : undefined
+  const color = primaryColor || '#1a7a4a'
+
+  const backdropStyle: React.CSSProperties = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100vw',
+    height: '100vh',
+    background: 'rgba(0,0,0,0.55)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '24px',
+    boxSizing: 'border-box',
+    pointerEvents: 'all',
+    zIndex: 2147483647,
+  }
+
+  const modalStyle: React.CSSProperties = {
+    width: '100%',
+    maxWidth: '860px',
+    height: 'calc(100vh - 48px)',
+    maxHeight: '860px',
+    background: '#fff',
+    borderRadius: '16px',
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'column',
+    boxShadow: '0 32px 100px rgba(0,0,0,0.35)',
+    boxSizing: 'border-box',
+  }
+
+  const headerStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '14px 20px',
+    background: color,
+    color: '#fff',
+    direction: 'rtl',
+    flexShrink: 0,
+    boxSizing: 'border-box',
+    fontFamily: "'Segoe UI', Arial, sans-serif",
+  }
+
+  const closeBtnStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '32px',
+    height: '32px',
+    background: 'rgba(255,255,255,0.18)',
+    border: 'none',
+    borderRadius: '50%',
+    color: '#fff',
+    cursor: 'pointer',
+    padding: 0,
+    flexShrink: 0,
+  }
+
+  const iframeStyle: React.CSSProperties = {
+    flex: 1,
+    width: '100%',
+    border: 'none',
+    display: 'block',
+    minHeight: 0,
+  }
 
   const modal = (
-    <div className="svo-modal-backdrop" onClick={() => setOpen(false)}>
+    <div style={backdropStyle} onClick={() => setOpen(false)}>
       <div
-        className="svo-modal"
+        style={modalStyle}
         onClick={(e: React.MouseEvent) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
-        aria-label={assistantName}
       >
-        <div className="svo-modal-header" style={btnStyle}>
-          <span className="svo-modal-title">{assistantName}</span>
-          <button
-            className="svo-modal-close"
-            onClick={() => setOpen(false)}
-            aria-label="إغلاق"
-          >
+        <div style={headerStyle}>
+          <span style={{ fontSize: '1rem', fontWeight: 700 }}>{assistantName}</span>
+          <button style={closeBtnStyle} onClick={() => setOpen(false)} aria-label="إغلاق">
             <CloseIcon />
           </button>
         </div>
         <iframe
           src={SMART_URL}
-          className="svo-modal-iframe"
+          style={iframeStyle}
           title={assistantName}
           allow="microphone"
         />
@@ -65,7 +147,7 @@ export function VoiceOrderButton({
     <>
       <button
         className="svo-call-btn"
-        style={btnStyle}
+        style={{ '--svo-primary': color } as React.CSSProperties}
         onClick={() => setOpen(true)}
         aria-label={buttonLabel}
       >
@@ -73,7 +155,7 @@ export function VoiceOrderButton({
         <span>{buttonLabel}</span>
       </button>
 
-      {mounted && open && createPortal(modal, document.body)}
+      {mounted && open && portalRef.current && createPortal(modal, portalRef.current)}
     </>
   )
 }
