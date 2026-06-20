@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import type { VoiceOrderProps } from './types'
 import './styles.css'
 
@@ -23,14 +24,45 @@ export function VoiceOrderButton({
   assistantName = 'مساعد ذكي',
 }: VoiceOrderProps) {
   const [open, setOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => { setMounted(true) }, [])
 
   const btnStyle = primaryColor
     ? ({ '--svo-primary': primaryColor } as React.CSSProperties)
     : undefined
 
+  const modal = (
+    <div className="svo-modal-backdrop" onClick={() => setOpen(false)}>
+      <div
+        className="svo-modal"
+        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={assistantName}
+      >
+        <div className="svo-modal-header" style={btnStyle}>
+          <span className="svo-modal-title">{assistantName}</span>
+          <button
+            className="svo-modal-close"
+            onClick={() => setOpen(false)}
+            aria-label="إغلاق"
+          >
+            <CloseIcon />
+          </button>
+        </div>
+        <iframe
+          src={SMART_URL}
+          className="svo-modal-iframe"
+          title={assistantName}
+          allow="microphone"
+        />
+      </div>
+    </div>
+  )
+
   return (
     <>
-      {/* Trigger button */}
       <button
         className="svo-call-btn"
         style={btnStyle}
@@ -41,38 +73,7 @@ export function VoiceOrderButton({
         <span>{buttonLabel}</span>
       </button>
 
-      {/* Modal backdrop */}
-      {open && (
-        <div className="svo-modal-backdrop" onClick={() => setOpen(false)}>
-          <div
-            className="svo-modal"
-            onClick={e => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-label={assistantName}
-          >
-            {/* Modal header */}
-            <div className="svo-modal-header" style={btnStyle}>
-              <span className="svo-modal-title">{assistantName}</span>
-              <button
-                className="svo-modal-close"
-                onClick={() => setOpen(false)}
-                aria-label="إغلاق"
-              >
-                <CloseIcon />
-              </button>
-            </div>
-
-            {/* iframe */}
-            <iframe
-              src={SMART_URL}
-              className="svo-modal-iframe"
-              title={assistantName}
-              allow="microphone"
-            />
-          </div>
-        </div>
-      )}
+      {mounted && open && createPortal(modal, document.body)}
     </>
   )
 }
