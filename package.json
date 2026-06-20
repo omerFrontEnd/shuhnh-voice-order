@@ -2,18 +2,20 @@
   "name": "shuhnh-voice-order",
   "version": "1.0.0",
   "description": "React component + FastAPI backend for voice-based shipping order creation via Gemini Live API",
-  "main": "dist/index.js",
-  "module": "dist/index.esm.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./styles.css": "./src/styles.css"
+  },
   "files": [
-    "dist",
+    "src",
     "backend",
     "README.md"
   ],
-  "scripts": {
-    "build": "tsc && rollup -c",
-    "dev": "tsc --watch"
-  },
+  "sideEffects": [
+    "*.css"
+  ],
   "peerDependencies": {
     "react": ">=17.0.0",
     "react-dom": ">=17.0.0"
@@ -24,21 +26,11 @@
     "@types/react-dom": "^18.0.0",
     "typescript": "^5.0.0"
   },
-  "keywords": [
-    "voice",
-    "order",
-    "shipping",
-    "gemini",
-    "arabic",
-    "react",
-    "fastapi",
-    "websocket",
-    "rtl"
-  ],
+  "keywords": ["voice", "order", "shipping", "gemini", "arabic", "react", "fastapi", "websocket", "rtl"],
   "author": "Almusanid",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/almusanid/shuhnh-voice-order"
+    "url": "https://github.com/omerFrontEnd/shuhnh-voice-order"
   }
 }
