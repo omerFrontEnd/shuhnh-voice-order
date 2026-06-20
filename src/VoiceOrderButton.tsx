@@ -354,6 +354,7 @@ export function VoiceOrderButton({
   googleMapsKey,
   assistantName = 'المساعد',
   primaryColor,
+  buttonLabel = 'مكالمة',
   onOrderComplete,
   onOrderSaved,
 }: VoiceOrderProps) {
@@ -501,7 +502,7 @@ export function VoiceOrderButton({
         aria-label={isCallActive ? 'إنهاء المكالمة' : 'بدء مكالمة صوتية'}
       >
         <PhoneIcon />
-        <span>{isCallActive ? 'إنهاء' : 'مكالمة'}</span>
+        <span>{isCallActive ? 'إنهاء' : buttonLabel}</span>
       </button>
 
       {/* Call overlay */}

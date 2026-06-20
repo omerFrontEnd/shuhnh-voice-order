@@ -45,6 +45,8 @@ export interface VoiceOrderProps {
   onOrderSaved?: (order: Order) => void
   /** Override any of the default Arabic field labels */
   fieldLabels?: Partial<FieldLabels>
+  /** Label shown on the trigger button. Default: "مكالمة" */
+  buttonLabel?: string
 }
 
 // ── Internal message types from the backend ────────────────────────
